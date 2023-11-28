@@ -3,11 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurApp", "SurApp\SurApp.csproj", "{EFB32192-4395-410E-B6F8-0F7FB053FF50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SurApp", "SurApp\SurApp.csproj", "{EFB32192-4395-410E-B6F8-0F7FB053FF50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurMath", "SurMath\SurMath.csproj", "{CBBF1847-043C-44FF-8FAB-8577D361001E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SurMath", "SurMath\SurMath.csproj", "{CBBF1847-043C-44FF-8FAB-8577D361001E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSurMath", "TestSurMath\TestSurMath.csproj", "{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSurMath", "TestSurMath\TestSurMath.csproj", "{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{73A44192-F8D5-4DF1-8C3B-26E73D8DC5F2}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
