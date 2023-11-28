@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurApp", "SurApp\SurApp.csproj", "{EFB32192-4395-410E-B6F8-0F7FB053FF50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurMath", "SurMath\SurMath.csproj", "{CBBF1847-043C-44FF-8FAB-8577D361001E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSurMath", "TestSurMath\TestSurMath.csproj", "{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFB32192-4395-410E-B6F8-0F7FB053FF50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB32192-4395-410E-B6F8-0F7FB053FF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB32192-4395-410E-B6F8-0F7FB053FF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB32192-4395-410E-B6F8-0F7FB053FF50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBBF1847-043C-44FF-8FAB-8577D361001E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBF1847-043C-44FF-8FAB-8577D361001E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBF1847-043C-44FF-8FAB-8577D361001E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBF1847-043C-44FF-8FAB-8577D361001E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2505B5-AEDA-47C0-8CDF-0201AC006C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F6CC653-9F9E-4225-A183-C2F40B59503F}
+	EndGlobalSection
+EndGlobal
