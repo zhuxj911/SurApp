@@ -10,6 +10,30 @@ namespace SurApp.Drawing;
 
 public class DrawingCanvas : System.Windows.Controls.Canvas
 {
+	//定义依赖属性，绑定绘图数据源
+	public ObservableCollection<GeoPoint> DrawPoints
+	{
+		get => (ObservableCollection<GeoPoint>)GetValue(DrawPointsProperty);
+		set => SetValue(DrawPointsProperty, value);
+	}
+
+	public static readonly DependencyProperty DrawPointsProperty =
+		DependencyProperty.Register("DrawPoints", typeof(ObservableCollection<GeoPoint>), typeof(DrawingCanvas),
+			new PropertyMetadata(DrawPointsValueChanged));
+
+	public static void DrawPointsValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+	{
+		DrawingCanvas drawingCanvas = (DrawingCanvas)d;
+		drawingCanvas.DrawPoints.CollectionChanged += drawingCanvas.DrawPoints_CollectionChanged;
+	}
+
+	private void DrawPoints_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	{
+		this.InvalidateVisual();
+	}
+	//定义依赖属性，绑定绘图数据源
+
+
 	private VisualCollection visuals;
 
 
@@ -53,59 +77,47 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 
 
 	//使用DrawVisual画Polyline
-	public void DrawLine(double x0, double y0, double x1, double y1, Brush color, double thinkness)
+	public void DrawLine(DrawingContext dc, double x0, double y0, double x1, double y1, Brush color, double thinkness)
 	{
-		DrawingVisual visualLine = new DrawingVisual();
-		DrawingContext dc = visualLine.RenderOpen();
 		Pen pen = new Pen(color, thinkness);
 		pen.Freeze();  //冻结画笔，这样能加快绘图速度
 		dc.DrawLine(pen, new Point(x0, y0), new Point(x1, y1));
-
-		dc.Close();
-		visuals.Add(visualLine);
 	}
 
-	public void DrawText(string text, double x, double y)
+
+	public void DrawText(DrawingContext dc, string text, double x, double y)
 	{
-		DrawingVisual visualText = new DrawingVisual();
-		DrawingContext dc = visualText.RenderOpen();
 		Typeface tp = new Typeface(new FontFamily("宋体"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
-		FormattedText ft = new FormattedText(text, new CultureInfo("zh-cn"), FlowDirection.LeftToRight, tp, 12, Brushes.Black);
-
-
+		FormattedText ft = new FormattedText(text,
+			new CultureInfo("zh-cn"),
+			FlowDirection.LeftToRight,
+			tp,
+			12,
+			Brushes.Black,
+			VisualTreeHelper.GetDpi(this).PixelsPerDip); //1.25 
 
 		dc.DrawText(ft, new Point(x, y));
-		dc.Close();
-		visuals.Add(visualText);
 	}
 
+
 	//使用DrawVisual画Circle，用作控制点
-	public void DrawCtrPnt(double x, double y, Brush color, double thinkness)
+	public void DrawCtrPnt(DrawingContext dc, double x, double y, Brush color, double thinkness)
 	{
-		DrawingVisual visualCircle = new DrawingVisual();
-		DrawingContext dc = visualCircle.RenderOpen();
 		Pen pen = new Pen(color, thinkness);
 		pen.Freeze();  //冻结画笔，这样能加快绘图速度
 		dc.DrawEllipse(Brushes.LemonChiffon, pen, new Point(x, y), 5, 5);
-		dc.Close();
-		visuals.Add(visualCircle);
 	}
 
-	//使用DrawVisual画Circle，用作控制点
-	public void DrawKnCtrPnt(double x, double y, Brush color, double thinkness)
+	//使用DrawVisual画Circle，用作已知控制点
+	public void DrawKnCtrPnt(DrawingContext dc, double x, double y, Brush color, double thinkness)
 	{
-		DrawingVisual visualCircle = new DrawingVisual();
-		DrawingContext dc = visualCircle.RenderOpen();
 		Pen pen = new Pen(color, thinkness);
 		pen.Freeze();  //冻结画笔，这样能加快绘图速度
 		dc.DrawEllipse(Brushes.Black, pen, new Point(x, y), 1, 1);
 		dc.DrawLine(pen, new Point(x - 5, y + 2.9), new Point(x + 5, y + 2.9));
 		dc.DrawLine(pen, new Point(x + 5, y + 2.9), new Point(x, y - 5.8));
 		dc.DrawLine(pen, new Point(x, y - 5.8), new Point(x - 5, y + 2.9));
-		dc.Close();
-		visuals.Add(visualCircle);
 	}
-
 
 	//以下定义为绘图使用
 	private double minX;  //高斯坐标X的最小值xn
@@ -118,15 +130,12 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 
 	private double k;  //变换比例
 
-	private void OnDraw(ObservableCollection<GeoPoint>? geoPointList)
+	private void OnDraw(DrawingContext dc)
 	{
-		if(geoPointList == null)
+		if(DrawPoints.Count == 0)
 			return;
 
-		if(geoPointList.Count == 0)
-			return;
-
-		GetGaussXySize(geoPointList);
+		GetGaussXySize();
 
 		maxVX = this.ActualWidth;
 		maxVY = this.ActualHeight;
@@ -135,16 +144,15 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		double ky = maxVY / (maxX - minX);
 		k = kx <= ky ? kx : ky;
 
-		this.ClearAll(); //先清除屏幕
 
-		foreach(var pt in geoPointList)
+		foreach(var pt in DrawPoints)
 		{
 			if(pt.X <= 0 || pt.Y <= 0)
 				continue; //排除坐标为0的点
 
 			GaussXyToViewXy(pt.X, pt.Y, out double x0, out double y0);
-			this.DrawCtrPnt(x0, y0, Brushes.Red, 1);
-			this.DrawText(pt.Name, x0 + 10, y0 - 7);
+			this.DrawCtrPnt(dc, x0, y0, Brushes.Red, 1);
+			this.DrawText(dc, pt.Name, x0 + 10, y0 - 7);
 		}
 	}
 
@@ -158,27 +166,27 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		yp = maxVY - k * (xt - minX);
 	}
 
-	private void GetGaussXySize(ObservableCollection<GeoPoint> geoPointList)
+	private void GetGaussXySize()
 	{
-		minX = geoPointList[0].X;
-		minY = geoPointList[0].Y;
-		maxX = geoPointList[0].X;
-		maxY = geoPointList[0].Y;
+		minX = DrawPoints[0].X;
+		minY = DrawPoints[0].Y;
+		maxX = DrawPoints[0].X;
+		maxY = DrawPoints[0].Y;
 
-		for(int i = 1; i < geoPointList.Count; i++) //如果只有一个点，由循环条件知，不会执行循环体
+		for(int i = 1; i < DrawPoints.Count; i++) //如果只有一个点，由循环条件知，不会执行循环体
 		{
-			if(geoPointList[i].X <= 0 || geoPointList[i].Y <= 0)
+			if(DrawPoints[i].X <= 0 || DrawPoints[i].Y <= 0)
 				continue;
 
-			if(geoPointList[i].X < minX)
-				minX = geoPointList[i].X;
-			if(geoPointList[i].Y < minY)
-				minY = geoPointList[i].Y;
+			if(DrawPoints[i].X < minX)
+				minX = DrawPoints[i].X;
+			if(DrawPoints[i].Y < minY)
+				minY = DrawPoints[i].Y;
 
-			if(geoPointList[i].X > maxX)
-				maxX = geoPointList[i].X;
-			if(geoPointList[i].Y > maxY)
-				maxY = geoPointList[i].Y;
+			if(DrawPoints[i].X > maxX)
+				maxX = DrawPoints[i].X;
+			if(DrawPoints[i].Y > maxY)
+				maxY = DrawPoints[i].Y;
 		}
 
 		//针对一个点或点范围较小的情况，进行范围扩展
@@ -191,22 +199,22 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 	protected override void OnRender(DrawingContext dc)
 	{
 		base.OnRender(dc);
-		ObservableCollection<GeoPoint>? geoPointList = Tag as ObservableCollection<GeoPoint>;
-		OnDraw(geoPointList);
+		if(DrawPoints != null)
+			this.OnDraw(dc);
 	}
 
 	public void OutToBmp(string bmpFileName)
 	{
-		RenderTargetBitmap rtb = new RenderTargetBitmap((int)this.ActualWidth, (int)this.ActualHeight, this.ActualWidth, this.ActualHeight, PixelFormats.Default);
-		//foreach (var it in this.visuals)
-		//{
-		//	rtb.Render(it);
-		//}
-		rtb.Render(this.visuals[0]);
+		//RenderTargetBitmap rtb = new RenderTargetBitmap((int)this.ActualWidth, (int)this.ActualHeight, this.ActualWidth, this.ActualHeight, PixelFormats.Default);
+		////foreach (var it in this.visuals)
+		////{
+		////	rtb.Render(it);
+		////}
+		//rtb.Render(this.visuals[0]);
 
-		FileStream stream = new FileStream(bmpFileName, FileMode.Create);
-		BitmapEncoder encoder = new BmpBitmapEncoder();
-		encoder.Frames.Add(BitmapFrame.Create(rtb));
-		encoder.Save(stream);
+		//FileStream stream = new FileStream(bmpFileName, FileMode.Create);
+		//BitmapEncoder encoder = new BmpBitmapEncoder();
+		//encoder.Frames.Add(BitmapFrame.Create(rtb));
+		//encoder.Save(stream);
 	}
 }

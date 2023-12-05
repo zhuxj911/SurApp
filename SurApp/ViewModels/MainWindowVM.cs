@@ -1,27 +1,18 @@
 ﻿using Microsoft.Win32;
-using SurApp.Drawing;
 using SurApp.Models;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Input;
 using ZXY;
 
 namespace SurApp.ViewModels;
 
 public class MainWindowVM : NotifyPropertyObject
 {
-	private DrawingCanvas drawingCanvas;
-
-	public MainWindowVM(DrawingCanvas drawingCanvas)
+	public MainWindowVM()
 	{
-		this.drawingCanvas = drawingCanvas;
-		this.GeoPointList.CollectionChanged += GeoPointList_CollectionChanged;
 	}
 
-	private void GeoPointList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-	{
-		drawingCanvas.InvalidateVisual();
-		//this.drawingCanvas.OnDraw(GeoPointList);
-	}
 
 	private string fileName = "untitle";
 	public string FileName
@@ -30,7 +21,7 @@ public class MainWindowVM : NotifyPropertyObject
 		set
 		{
 			fileName = value;
-			RaisePropertyChanged("FileName");
+			RaisePropertyChanged();
 			RaisePropertyChanged("Title");
 		}
 	}
@@ -95,11 +86,21 @@ public class MainWindowVM : NotifyPropertyObject
 		}
 	}
 
-	private ObservableCollection<GeoPoint> sPointList = new ObservableCollection<GeoPoint>();
-	public ObservableCollection<GeoPoint> GeoPointList
+	private ObservableCollection<GeoPoint> pointList = new ObservableCollection<GeoPoint>();
+	public ObservableCollection<GeoPoint> PointList => pointList;
+	public bool IsValidated() => PointList.Count > 0;
+
+	#region Commands
+	public void New()
 	{
-		get => sPointList;
+		CurrentEllipsoid = Ellipsoids["CGCS2000"];
+		dmsL0 = 0;
+		YKM = 0;
+		NY = 0;
+		PointList.Clear();
 	}
+	public ICommand NewCommand => new Commands.MyCommand(
+		(object? parameter) => New(), (object? parameter) => true);
 
 	public void Open()
 	{
@@ -113,7 +114,7 @@ public class MainWindowVM : NotifyPropertyObject
 		using(StreamReader sr = new StreamReader(FileName))
 		{
 			string[]? items = null;
-			GeoPointList.Clear();
+			PointList.Clear();
 			while(true)
 			{
 				string? buffer = sr.ReadLine();
@@ -185,10 +186,12 @@ public class MainWindowVM : NotifyPropertyObject
 					pnt.dmsB = double.Parse(items[3]);
 					pnt.dmsL = double.Parse(items[4]);
 				}
-				this.GeoPointList.Add(pnt);
+				this.PointList.Add(pnt);
 			}
 		}
 	}
+	public ICommand OpenCommand => new Commands.MyCommand(
+		(object? parameter) => Open(), (object? parameter) => true);
 
 	private void WriteFile()
 	{
@@ -222,7 +225,7 @@ public class MainWindowVM : NotifyPropertyObject
 
 			sw.WriteLine();
 			sw.WriteLine("#点名, X, Y, B, L");
-			foreach(var pnt in GeoPointList)
+			foreach(var pnt in PointList)
 			{
 				sw.WriteLine(pnt);
 			}
@@ -237,6 +240,8 @@ public class MainWindowVM : NotifyPropertyObject
 		else
 			WriteFile();
 	}
+	public ICommand SaveCommand => new Commands.MyCommand(
+		(object? parameter) => Save(), (object? parameter) => true);
 
 	public void SaveAs()
 	{
@@ -249,13 +254,14 @@ public class MainWindowVM : NotifyPropertyObject
 
 		WriteFile();
 	}
-
+	public ICommand SaveAsCommand => new Commands.MyCommand(
+		(object? parameter) => SaveAs(), (object? parameter) => true);
 
 	public void BLtoXY()
 	{
 		IProj proj = new GaussProj(CurrentEllipsoid);
 		double L0 = SurMath.DMSToRadian(this.dmsL0);
-		foreach(var pnt in GeoPointList)
+		foreach(var pnt in PointList)
 		{
 			double B = SurMath.DMSToRadian(pnt.dmsB);
 			double L = SurMath.DMSToRadian(pnt.dmsL);
@@ -266,12 +272,14 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = xy.m;
 		}
 	}
+	public ICommand BLtoXYCommand => new Commands.MyCommand(
+		(object? parameter) => BLtoXY(), (object? parameter) => true);
 
 	public void XYtoBL()
 	{
 		IProj proj = new GaussProj(CurrentEllipsoid);
 		double L0 = SurMath.DMSToRadian(this.dmsL0);
-		foreach(var pnt in GeoPointList)
+		foreach(var pnt in PointList)
 		{
 			var BL = proj.XYtoBL(pnt.X, pnt.Y, L0, YKM, NY);
 			pnt.dmsB = SurMath.RadianToDMS(BL.B);
@@ -280,10 +288,12 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = BL.m;
 		}
 	}
+	public ICommand XYtoBLCommand => new Commands.MyCommand(
+		(object? parameter) => XYtoBL(), (object? parameter) => true);
 
 	public void ClearXY()
 	{
-		foreach(var pnt in GeoPointList)
+		foreach(var pnt in PointList)
 		{
 			pnt.X = 0;
 			pnt.Y = 0;
@@ -291,10 +301,12 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = 0;
 		}
 	}
+	public ICommand ClearXYCommand => new Commands.MyCommand(
+		(object? parameter) => ClearXY(), (object? parameter) => true);
 
 	public void ClearBL()
 	{
-		foreach(var pnt in GeoPointList)
+		foreach(var pnt in PointList)
 		{
 			pnt.dmsB = 0;
 			pnt.dmsL = 0;
@@ -302,13 +314,16 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = 0;
 		}
 	}
+	public ICommand ClearBLCommand => new Commands.MyCommand(
+		(object? parameter) => ClearBL(), (object? parameter) => true);
 
-	public void New()
+
+	private void CalculateAzimuth()
 	{
-		CurrentEllipsoid = Ellipsoids["CGCS2000"];
-		dmsL0 = 0;
-		YKM = 0;
-		NY = 0;
-		GeoPointList.Clear();
+		AzimuthWindow win = new AzimuthWindow();
+		win.ShowDialog();
 	}
+	public ICommand CalculateAzimuthCommand => new Commands.MyCommand(
+		(object? parameter) => CalculateAzimuth(), (object? parameter) => true);
+	#endregion
 }
