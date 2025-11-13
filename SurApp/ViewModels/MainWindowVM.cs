@@ -7,7 +7,7 @@ using ZXY;
 
 namespace SurApp.ViewModels;
 
-public class MainWindowVM : NotifyPropertyObject
+public class MainWindowVM : ViewModelBase
 {
 	public MainWindowVM()
 	{
@@ -99,7 +99,7 @@ public class MainWindowVM : NotifyPropertyObject
 		NY = 0;
 		PointList.Clear();
 	}
-	public ICommand NewCommand => new Commands.MyCommand(
+	public ICommand NewCommand => new Commands.RelayCommand(
 		(object? parameter) => New(), (object? parameter) => true);
 
 	public void Open()
@@ -190,7 +190,7 @@ public class MainWindowVM : NotifyPropertyObject
 			}
 		}
 	}
-	public ICommand OpenCommand => new Commands.MyCommand(
+	public ICommand OpenCommand => new Commands.RelayCommand(
 		(object? parameter) => Open(), (object? parameter) => true);
 
 	private void WriteFile()
@@ -240,7 +240,7 @@ public class MainWindowVM : NotifyPropertyObject
 		else
 			WriteFile();
 	}
-	public ICommand SaveCommand => new Commands.MyCommand(
+	public ICommand SaveCommand => new Commands.RelayCommand(
 		(object? parameter) => Save(), (object? parameter) => true);
 
 	public void SaveAs()
@@ -254,17 +254,17 @@ public class MainWindowVM : NotifyPropertyObject
 
 		WriteFile();
 	}
-	public ICommand SaveAsCommand => new Commands.MyCommand(
+	public ICommand SaveAsCommand => new Commands.RelayCommand(
 		(object? parameter) => SaveAs(), (object? parameter) => true);
 
 	public void BLtoXY()
 	{
 		IProj proj = new GaussProj(CurrentEllipsoid);
-		double L0 = SurMath.DMSToRadian(this.dmsL0);
+		double L0 = SurMath.DmsToRadian(this.dmsL0);
 		foreach(var pnt in PointList)
 		{
-			double B = SurMath.DMSToRadian(pnt.dmsB);
-			double L = SurMath.DMSToRadian(pnt.dmsL);
+			double B = SurMath.DmsToRadian(pnt.dmsB);
+			double L = SurMath.DmsToRadian(pnt.dmsL);
 			var xy = proj.BLtoXY(B, L, L0, YKM, NY);
 			pnt.X = xy.X;
 			pnt.Y = xy.Y;
@@ -272,24 +272,23 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = xy.m;
 		}
 	}
-	public ICommand BLtoXYCommand => new Commands.MyCommand(
+	public ICommand BLtoXYCommand => new Commands.RelayCommand(
 		(object? parameter) => BLtoXY(), (object? parameter) => true);
 
 	public void XYtoBL()
 	{
 		IProj proj = new GaussProj(CurrentEllipsoid);
-		double L0 = SurMath.DMSToRadian(this.dmsL0);
+		double L0 = SurMath.DmsToRadian(this.dmsL0);
 		foreach(var pnt in PointList)
 		{
 			var BL = proj.XYtoBL(pnt.X, pnt.Y, L0, YKM, NY);
-			pnt.dmsB = SurMath.RadianToDMS(BL.B);
-			pnt.dmsL = SurMath.RadianToDMS(BL.L);
+			pnt.dmsB = SurMath.RadianToDms(BL.B);
+			pnt.dmsL = SurMath.RadianToDms(BL.L);
 			pnt.Gamma = BL.gamma;
 			pnt.m = BL.m;
 		}
 	}
-	public ICommand XYtoBLCommand => new Commands.MyCommand(
-		(object? parameter) => XYtoBL(), (object? parameter) => true);
+	public ICommand XYtoBLCommand => new Commands.RelayCommand((_) => XYtoBL());
 
 	public void ClearXY()
 	{
@@ -301,8 +300,7 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = 0;
 		}
 	}
-	public ICommand ClearXYCommand => new Commands.MyCommand(
-		(object? parameter) => ClearXY(), (object? parameter) => true);
+	public ICommand ClearXYCommand => new Commands.RelayCommand((_) => ClearXY());
 
 	public void ClearBL()
 	{
@@ -314,16 +312,13 @@ public class MainWindowVM : NotifyPropertyObject
 			pnt.m = 0;
 		}
 	}
-	public ICommand ClearBLCommand => new Commands.MyCommand(
-		(object? parameter) => ClearBL(), (object? parameter) => true);
-
+	public ICommand ClearBLCommand => new Commands.RelayCommand((_) => ClearBL());
 
 	private void CalculateAzimuth()
 	{
 		AzimuthWindow win = new AzimuthWindow();
 		win.ShowDialog();
 	}
-	public ICommand CalculateAzimuthCommand => new Commands.MyCommand(
-		(object? parameter) => CalculateAzimuth(), (object? parameter) => true);
+	public ICommand CalculateAzimuthCommand => new Commands.RelayCommand((_) => CalculateAzimuth());
 	#endregion
 }

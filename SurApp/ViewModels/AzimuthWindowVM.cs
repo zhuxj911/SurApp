@@ -1,99 +1,114 @@
 ﻿using System.Windows.Input;
+using SurApp.Commands;
+using SurApp.Models;
 using ZXY;
 
 namespace SurApp.ViewModels;
 
-internal class AzimuthWindowVM : NotifyPropertyObject
+internal class AzimuthWindowVM : ViewModelBase
 {
 
-	public AzimuthWindowVM()
-	{
-		//设置为预编译状态下的数据
+    public AzimuthWindowVM()
+    {
+        //设置为预编译状态下的数据
 #if DEBUG
-		startPoint = new Point("D01", 3805820.521, 333150.649, 0);
-		endPoint = new Point("D02", 3805813.062, 333067.961, 0);
+        startPoint = new() { Name = "D01", X = 3805820.521, Y = 333150.649 };
+        endPoint = new() { Name = "D02", X = 3805813.062, Y = 333067.961 };
 #else
-	startPoint = new Point("", 0.0, 0.0, 0.0);
-	endPoint = new Point("", 0.0, 0.0, 0.0);
+	    startPoint = new();
+		endPoint = new();
 #endif
-	}
+    }
 
-	private Point startPoint;
-	public Point StartPoint
-	{
-		get => startPoint;
-		set
-		{
-			startPoint = value;
-			RaisePropertyChanged();
-		}
-	}
+    private GeoPoint startPoint;
+    public GeoPoint StartPoint
+    {
+        get => startPoint;
+        set
+        {
+            if(startPoint != value)
+            {
+                startPoint = value;
+                RaisePropertyChanged();
+            }
+            
+        }
+    }
 
-	private Point endPoint;
-	public Point EndPoint
-	{
-		get => endPoint;
-		set
-		{
-			endPoint = value;
-			RaisePropertyChanged();
-		}
-	}
+    private GeoPoint endPoint;
+    public GeoPoint EndPoint
+    {
+        get => endPoint;
+        set
+        {
+            if(endPoint != value)
+            {
+                endPoint = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
 
-	private string azName = "起点->方向的坐标方位角:";
-	public string AzName
-	{
-		get { return azName; }
-		set
-		{
-			azName = value;
-			RaisePropertyChanged("AzName");
-		}
-	}
+    private string azName = "起点->方向的坐标方位角:";
+    public string AzName
+    {
+        get => azName;
+        set
+        {
+            if(azName != value)
+            {
+                azName = value;
+                RaisePropertyChanged("AzName");
+            }
+        }
+    }
 
-	private string az = "";
-	public string Az
-	{
-		get { return az; }
-		set { az = value; RaisePropertyChanged(); }
-	}
+    private string azValue = "";
+    public string AzValue
+    {
+        get => azValue;
+        set
+        {
+            if(azValue != value)
+            {
+                azValue = value;
+                RaisePropertyChanged();
+            }
+        }
+    }   
 
-	private double dist;
-	public double Dist
-	{
-		get { return dist; }
-		set { dist = value; RaisePropertyChanged(); }
-	}
+    private double dist;
+    public double Dist
+    {
+        get => dist; 
+        set 
+        { 
+            if(dist != value)
+            {
+                dist = value; RaisePropertyChanged();
+            }
+        }
+    }
 
-	public void Calculate(object? parameter)
-	{
-		var ad = SurMath.Azimuth(StartPoint.X, StartPoint.Y, EndPoint.X, EndPoint.Y);
+    public void Switch()
+    {
+        (StartPoint, EndPoint) = (EndPoint, StartPoint);
+    }
+    public ICommand SwitchCommand => new Commands.RelayCommand( (_) => Switch() );
 
-		Az = SurMath.RadianToString(ad.a);
-		Dist = ad.d;
+    public void Calculate()
+    {
+        var ad = StartPoint.Azimuth(EndPoint);
 
-		AzName = $"{StartPoint.Name}->{EndPoint.Name}的坐标方位角";
-	}
+        AzValue = SurMath.RadianToDmsString(ad.a);
+        Dist = ad.d;
 
-	public bool canCalculate(object? parameter)
-	{
-		return true;
-	}
+        AzName = $"{StartPoint.Name}->{EndPoint.Name}的坐标方位角";
+    }
 
-	public void Switch(object? parameter)
-	{
-		var tmp = StartPoint;
-		StartPoint = EndPoint;
-		EndPoint = tmp;
-	}
-
-
-	public ICommand CalculateCommand => new Commands.MyCommand(
-		Calculate, canCalculate);
-
-
-	public ICommand SwitchCommand => new Commands.MyCommand(
-		Switch, canCalculate);
+    // 控制计算按钮是否可用   
+    public bool CanCalculate => Math.Abs(StartPoint.X - EndPoint.X) >= 0.1 || Math.Abs(StartPoint.Y - EndPoint.Y) >= 0.1;
+    public ICommand CalculateCommand => new RelayCommand( (_) => Calculate(), (_) => CanCalculate);
 }
 
 

@@ -1,200 +1,300 @@
+Ôªøusing Moq;
 using ZXY;
 
-namespace TestSurMath
+namespace UnitTestSurMath;
+
+public class UnitTestSurMath
 {
-	[TestClass]
-	public class UnitTestSurMath
-	{
-		[TestMethod]
-		public void TestDMSToDMS()
-		{
-			{
-				var dms = SurMath.DMSToDMS(123.3253012312);
-				Assert.AreEqual(123, dms.d);
-				Assert.AreEqual(32, dms.m);
-				Assert.AreEqual(53.012312, dms.s, 1e-6);
+    [Fact]
+    public void TestDmsToDms()
+    {
+        var dms = SurMath.DmsToDms(123.4052);
+        Assert.Equal<int>(123, dms.d);
+        Assert.Equal<int>(40, dms.m);
+        Assert.Equal(52, dms.s, 1e-8);
 
-				dms = SurMath.DMSToDMS(1.4);
-				Assert.AreEqual(1, dms.d);
-				Assert.AreEqual(40, dms.m);
-				Assert.AreEqual(0, dms.s, 1e-6);
-			}
+        dms = SurMath.DmsToDms(-123.4052);
+        Assert.Equal<int>(-123, dms.d);
+        Assert.Equal<int>(-40, dms.m);
+        Assert.Equal(-52, dms.s, 1e-8);
 
-			{
-				var dms = SurMath.DMSToDMS(10.423011);
-				Assert.AreEqual(10, dms.d);
-				Assert.AreEqual(42, dms.m);
-				Assert.AreEqual(30.11, dms.s, 1e-5);
+        dms = SurMath.DmsToDms(101.02201);
+        Assert.Equal(101, dms.d);
+        Assert.Equal(2, dms.m);
+        Assert.Equal(20.1, dms.s, 1e-6);
 
-				dms = SurMath.DMSToDMS(10.423011223344);
-				Assert.AreEqual(10, dms.d);
-				Assert.AreEqual(42, dms.m);
-				Assert.AreEqual(30.11223344, dms.s, 1e-10);
+        dms = SurMath.DmsToDms(-101.02201);
+        Assert.Equal(-101, dms.d);
+        Assert.Equal(-2, dms.m);
+        Assert.Equal(-20.1, dms.s, 1e-6);
 
 
-				dms = SurMath.DMSToDMS(1.4000);
-				Assert.AreEqual(1, dms.d);
-				Assert.AreEqual(40, dms.m);
-				Assert.AreEqual(0, dms.s, 1e-5);
-			}
-			{
-				var dms = SurMath.DMSToDMS(-10.423011);
-				Assert.AreEqual(-10, dms.d);
-				Assert.AreEqual(-42, dms.m);
-				Assert.AreEqual(-30.11, dms.s, 1e-5);
+        dms = SurMath.DmsToDms(1.4000);
+        Assert.Equal<int>(1, dms.d);
+        Assert.Equal<int>(40, dms.m);
+        Assert.Equal(0, dms.s, 1e-8);
 
-				dms = SurMath.DMSToDMS(-10.423011223344);
-				Assert.AreEqual(-10, dms.d);
-				Assert.AreEqual(-42, dms.m);
-				Assert.AreEqual(-30.11223344, dms.s, 1e-10);
+        dms = SurMath.DmsToDms(-1.4000);
+        Assert.Equal<int>(-1, dms.d);
+        Assert.Equal<int>(-40, dms.m);
+        Assert.Equal(0, dms.s, 1e-8);
 
+        dms = SurMath.DmsToDms(1.40001);
+        Assert.Equal(1, dms.d);
+        Assert.Equal(40, dms.m);
+        Assert.Equal(0.1, dms.s, 1e-6);
 
-				dms = SurMath.DMSToDMS(-1.4000);
-				Assert.AreEqual(-1, dms.d);
-				Assert.AreEqual(-40, dms.m);
-				Assert.AreEqual(0, dms.s, 1e-5);
-			}
-		}
-
-		[TestMethod]
-		public void TestDmsToRadian()
-		{
-			double rad = SurMath.DMSToRadian(101.03201);
-			Assert.AreEqual(1.763752656690170, rad, 1e-14);
-			rad = SurMath.DMSToRadian(-101.03201);
-			Assert.AreEqual(-1.763752656690170, rad, 1e-14);
-
-			rad = SurMath.DMSToRadian(1.4001);
-			Assert.AreEqual(0.0290936690033833000, rad, 1e-14);
-
-			rad = SurMath.DMSToRadian(1.4000);
-			Assert.AreEqual(0.0290888208665722, rad, 1e-14);
-			rad = SurMath.DMSToRadian(-1.4000);
-			Assert.AreEqual(-0.0290888208665722, rad, 1e-14);
-		}
+        dms = SurMath.DmsToDms(-1.40001);
+        Assert.Equal(-1, dms.d);
+        Assert.Equal(-40, dms.m);
+        Assert.Equal(-0.1, dms.s, 1e-6);
+    }
 
 
-		[TestMethod]
-		public void TestRadianToDMS()
-		{
-			{
-				var dms = SurMath.Radian2DMS(0.0290888208665722);
-				Assert.AreEqual(1, dms.d);
-				Assert.AreEqual(40, dms.m);
-				Assert.AreEqual(0, dms.s, 1e-5);
-			}
+    [Fact]
+    public void TestDmsToRadian()
+    {
+        var r = SurMath.DmsToRadian(101.02201);
+        Assert.Equal(1.76346176848151, r, 1e-14);
 
-			{
-				var dms = SurMath.Radian2DMS(0.186896207362775000);
-				Assert.AreEqual(10, dms.d);
-				Assert.AreEqual(42, dms.m);
-				Assert.AreEqual(30.11, dms.s, 1e-5);
-			}
+        r = SurMath.DmsToRadian(-101.02201);
+        Assert.Equal(-1.76346176848151, r, 1e-14);
 
-			{
-				var dms = SurMath.Radian2DMS(-0.0290888208665722);
-				Assert.AreEqual(-1, dms.d);
-				Assert.AreEqual(-40, dms.m);
-				Assert.AreEqual(0, dms.s, 1e-5);
-			}
+        r = SurMath.DmsToRadian(1.4000);
+        Assert.Equal(0.0290888208665722, r, 1e-14);
 
-			{
-				var dms = SurMath.Radian2DMS(-0.186896207362775000);
-				Assert.AreEqual(-10, dms.d);
-				Assert.AreEqual(-42, dms.m);
-				Assert.AreEqual(-30.11, dms.s, 1e-5);
-			}
-		}
+        r = SurMath.DmsToRadian(-1.4000);
+        Assert.Equal(-0.0290888208665722, r, 1e-14);
+
+        r = SurMath.DmsToRadian(1.40001);
+        Assert.Equal(0.02908930568025330, r, 1e-14);
+
+        r = SurMath.DmsToRadian(-1.40001);
+        Assert.Equal(-0.02908930568025330, r, 1e-14);
+    }
 
 
-		[TestMethod]
-		public void TestDMStoString()
-		{
-			var str = SurMath.DmsToString(101.03201);
-			Assert.AreEqual("101°„03°‰20.1°Â", str);
+    [Fact]
+    public void TestDmsToDmsString()
+    {
+        var r = SurMath.DmsToDmsString(101.02201);
+        Assert.Equal("101¬∞02‚Ä≤20.1‚Ä≥", r);
 
-			str = SurMath.DmsToString(-101.03201);
-			Assert.AreEqual("-101°„03°‰20.1°Â", str);
+        r = SurMath.DmsToDmsString(-101.02201);
+        Assert.Equal("-101¬∞02‚Ä≤20.1‚Ä≥", r);
 
-			str = SurMath.DmsToString(0.4001);
-			Assert.AreEqual("0°„40°‰01°Â", str);
+        r = SurMath.DmsToDmsString(1.40001);
+        Assert.Equal("1¬∞40‚Ä≤00.1‚Ä≥", r);
 
-			str = SurMath.DmsToString(-0.4001);
-			Assert.AreEqual("-0°„40°‰01°Â", str);
+        r = SurMath.DmsToDmsString(-1.40001);
+        Assert.Equal("-1¬∞40‚Ä≤00.1‚Ä≥", r);
 
-			str = SurMath.DmsToString(1.4001);
-			Assert.AreEqual("1°„40°‰01°Â", str);
+        r = SurMath.DmsToDmsString(1.4000);
+        Assert.Equal("1¬∞40‚Ä≤00‚Ä≥", r);
 
-			str = SurMath.DmsToString(1.4000);
-			Assert.AreEqual("1°„40°‰00°Â", str);
-
-			str = SurMath.DmsToString(-1.4000);
-			Assert.AreEqual("-1°„40°‰00°Â", str);
-		}
+        r = SurMath.DmsToDmsString(-1.4000);
+        Assert.Equal("-1¬∞40‚Ä≤00‚Ä≥", r);
+    }
 
 
-		[TestMethod]
-		public void TestRadtoString()
-		{
-			string dms = SurMath.RadianToString(0.0234165007975906);
-			Assert.AreEqual<string>("1°„20°‰30°Â", dms);
-
-			dms = SurMath.RadianToString(-0.0234165007975906);
-			Assert.AreEqual<string>("-1°„20°‰30°Â", dms);
-
-			dms = SurMath.RadianToString(0.02908882086657220);
-			Assert.AreEqual<string>("1°„40°‰00°Â", dms);
-
-			dms = SurMath.RadianToString(-0.02908882086657220);
-			Assert.AreEqual<string>("-1°„40°‰00°Â", dms);
-
-			dms = SurMath.RadianToString(0.02908930568025330);
-			Assert.AreEqual<string>("1°„40°‰00.1°Â", dms);
-
-			dms = SurMath.RadianToString(-0.02908930568025330);
-			Assert.AreEqual<string>("-1°„40°‰00.1°Â", dms);
-
-			dms = SurMath.RadianToString(0.69580806988502100); //39 52 0.71672
-			Assert.AreEqual<string>("39°„52°‰00.71672°Â", dms);
-
-			dms = SurMath.RadianToString(-0.69580806988502100); //-39 52 0.71672
-			Assert.AreEqual<string>("-39°„52°‰00.71672°Â", dms);
-		}
+    [Fact]
+    public void TestRadian2Dms()
+    {
+        var dms = SurMath.Radian2Dms(0.410855952558766);
+        Assert.Equal<int>(23, dms.d);
+        Assert.Equal<int>(32, dms.m);
+        Assert.Equal(25.12345, dms.s, 1e-8);
 
 
-		[TestMethod]
-		public void TestAzimuth()
-		{
-			var a = SurMath.Azimuth(0, 0, 1, 1);
-			Assert.AreEqual(45, SurMath.RadianToDMS(a.a), 1e-10);
+        dms = SurMath.Radian2Dms(-0.410855952558766);
+        Assert.Equal<int>(-23, dms.d);
+        Assert.Equal<int>(-32, dms.m);
+        Assert.Equal(-25.12345, dms.s, 1e-8);
 
-			double xA = 50342.464;
-			double yA = 3423.232;
-			double xB = 50289.874;
-			double yB = 3528.978;
-			var az = SurMath.Azimuth(xA, yA, xB, yB);
-			Assert.AreEqual<string>("116°„26°‰32.10298°Â", SurMath.RadianToString(az.a));
 
-			xA = 50289.874;
-			yA = 3528.978;
-			xB = 50342.464;
-			yB = 3423.232;
-			az = SurMath.Azimuth(xA, yA, xB, yB);
-			Assert.AreEqual<string>("296°„26°‰32.10298°Â", SurMath.RadianToString(az.a));
+        dms = SurMath.Radian2Dms(1.76346176848151);
+        Assert.Equal(101, dms.d);
+        Assert.Equal(2, dms.m);
+        Assert.Equal(20.1, dms.s, 1e-6);
 
-			xA = 50342.464;
-			yA = 3423.232;
-			xB = 50389.874;
-			yB = 3528.978;
-			az = SurMath.Azimuth(xA, yA, xB, yB);
-			Assert.AreEqual<string>("65°„51°‰05.29596°Â", SurMath.RadianToString(az.a));
+        dms = SurMath.Radian2Dms(-1.76346176848151);
+        Assert.Equal(-101, dms.d);
+        Assert.Equal(-2, dms.m);
+        Assert.Equal(-20.1, dms.s, 1e-6);
 
-			xA = 50389.874;
-			yA = 3528.978;
-			xB = 50342.464;
-			yB = 3423.232;
-			az = SurMath.Azimuth(xA, yA, xB, yB);
-			Assert.AreEqual<string>("245°„51°‰05.29596°Â", SurMath.RadianToString(az.a));
-		}
-	}
+        dms = SurMath.Radian2Dms(0.0290888208665722);
+        Assert.Equal(1, dms.d);
+        Assert.Equal(40, dms.m);
+        Assert.Equal(0, dms.s, 1e-6);
+
+        dms = SurMath.Radian2Dms(-0.0290888208665722);
+        Assert.Equal(-1, dms.d);
+        Assert.Equal(-40, dms.m);
+        Assert.Equal(0, dms.s, 1e-6);
+
+        dms = SurMath.Radian2Dms(0.0290893056802533);
+        Assert.Equal(1, dms.d);
+        Assert.Equal(40, dms.m);
+        Assert.Equal(0.1, dms.s, 1e-6);
+
+        dms = SurMath.Radian2Dms(-0.0290893056802533);
+        Assert.Equal(-1, dms.d);
+        Assert.Equal(-40, dms.m);
+        Assert.Equal(-0.1, dms.s, 1e-6);
+    }
+
+
+    [Fact]
+    public void TestRadianToDms()
+    {
+        var dms = SurMath.RadianToDms(1.76346176848151);
+        Assert.Equal(101.02201, dms, 1e-10);
+
+        dms = SurMath.RadianToDms(-1.76346176848151);
+        Assert.Equal(-101.02201, dms, 1e-10);
+
+        dms = SurMath.RadianToDms(0.0290888208665722);
+        Assert.Equal(1.4000, dms, 1e-10);
+
+        dms = SurMath.RadianToDms(-0.0290888208665722);
+        Assert.Equal(-1.4000, dms, 1e-10);
+
+        dms = SurMath.RadianToDms(0.0290893056802533);
+        Assert.Equal(1.40001, dms, 1e-10);
+
+        dms = SurMath.RadianToDms(-0.0290893056802533);
+        Assert.Equal(-1.40001, dms, 1e-10);
+    }
+
+
+    [Fact]
+    public void TestDmsToRadianToDms()
+    {
+        var r = SurMath.DmsToRadian(101.02201);
+        var dms = SurMath.RadianToDms(r);
+        Assert.Equal(101.02201, dms, 1e-14);
+
+        r = SurMath.DmsToRadian(-101.02201);
+        dms = SurMath.RadianToDms(r);
+        Assert.Equal(-101.02201, dms, 1e-14);
+
+        r = SurMath.DmsToRadian(1.4000);
+        dms = SurMath.RadianToDms(r);
+        Assert.Equal(1.4000, dms, 1e-14);
+
+        r = SurMath.DmsToRadian(-1.4000);
+        dms = SurMath.RadianToDms(r);
+        Assert.Equal(-1.4000, dms, 1e-14);
+
+        r = SurMath.DmsToRadian(1.40001);
+        dms = SurMath.RadianToDms(r);
+        Assert.Equal(1.40001, dms, 1e-14);
+
+        r = SurMath.DmsToRadian(-1.40001);
+        dms = SurMath.RadianToDms(r);
+        Assert.Equal(-1.40001, dms, 1e-14);
+    }
+
+
+    [Fact]
+    public void TestAzimuth()
+    {
+        var ad = SurMath.Azimuth(12.234, 23.1234, 13.2323, 24.232332);
+        Assert.Equal(0.837851107, ad.a, 1e-9);
+
+        ad = SurMath.Azimuth(12.234, 23.1234, 3.2323, 24.232332);
+        Assert.Equal(3.019018832, ad.a, 1e-9);
+
+        ad = SurMath.Azimuth(12.234, 23.1234, 3.2323, 4.232332);
+        Assert.Equal(4.267712913, ad.a, 1e-9);
+
+        ad = SurMath.Azimuth(12.234, 23.1234, 13.2323, 4.232332);
+        Assert.Equal(4.765184951, ad.a, 1e-9);
+
+
+        double xA = 50342.464;
+        double yA = 3423.232;
+        double xB = 50289.874;
+        double yB = 3528.978;
+
+        ad = SurMath.Azimuth(xA, yA, xB, yB);
+        Assert.Equal(2.03230066539732, ad.a, 1e-10);
+        Assert.Equal(118.101331982326, ad.d, 1e-10);
+
+        ad = SurMath.Azimuth(xB, yB, xA, yA);
+        Assert.Equal(2.03230066539732 + Math.PI, ad.a, 1e-10);
+        Assert.Equal(118.101331982326, ad.d, 1e-10);
+    }
+
+    [Fact]
+    public void TestTo0_2PI()
+    {
+        var r = SurMath.To0_2PI(SurMath.DmsToRadian(500.0));
+        Assert.Equal(140.0, SurMath.RadianToDms(r), 1e-10);
+
+        r = SurMath.To0_2PI(SurMath.DmsToRadian(-500.0));
+        Assert.Equal(220.0, SurMath.RadianToDms(r), 1e-10);
+    }
+
+    [Fact]
+    public void TestPointAzimuth()
+    {
+        //var A = new Point(50342.464, 3423.232);
+        //var B = new Point(50289.874, 3528.978);
+        //var ad = A.Azimuth(B);
+        //Assert.Equal(2.03230066539732, ad.a, 1e-10);
+        //Assert.Equal(118.101331982326, ad.d, 1e-10);
+
+        //ad = B.Azimuth(A);
+        //Assert.Equal(2.03230066539732 + Math.PI, ad.a, 1e-10);
+        //Assert.Equal(118.101331982326, ad.d, 1e-10);
+
+        //ÂºïÂÖ•MoqÈíàÂØπÊé•Âè£IPointÊ®°ÊãüÊµãËØï
+        //dotnet add package Moq --version 4.20.72
+        // https://github.com/devlooped/moq
+        /*
+            public interface IUserInfo
+            {
+                string UserName { get; set; }
+                int Age { get; set; }
+
+                string GetUserData();
+            }
+
+            public static void UserInfoTest()
+            {
+                // ÂàõÂª∫ IUserInfo ÁöÑÊ®°ÊãüÂØπË±°
+                var mockUserInfo = new Mock<IUserInfo>();
+
+                // ËÆæÁΩÆÊ®°ÊãüÂØπË±°ÁöÑÂ±ûÊÄßÂÄº
+                mockUserInfo.SetupProperty(u => u.UserName, "Â§ßÂßö");
+                mockUserInfo.SetupProperty(u => u.Age, 27);
+
+                // ËÆæÁΩÆ GetUserData ÊñπÊ≥ïÁöÑËøîÂõûÂÄº
+                mockUserInfo.Setup(u => u.GetUserData()).Returns("UserName: Â§ßÂßö, Age: 25");
+
+                // Ëé∑ÂèñÊ®°ÊãüÂØπË±°ÁöÑÂÆû‰æã
+                var userInfo = mockUserInfo.Object;
+
+                // Ë∞ÉÁî®ÊñπÊ≥ïÂπ∂ËæìÂá∫ÁªìÊûú
+                Console.WriteLine(userInfo.GetUserData());
+                Console.WriteLine("UserName: {0}, Age: {1}", userInfo.UserName, userInfo.Age);
+            }
+        */
+        var A = new Mock<IPoint>();
+        A.SetupProperty(p => p.X, 50342.464);
+        A.SetupProperty(p => p.Y, 3423.232);
+        var B = new Mock<IPoint>();
+        B.SetupProperty(p => p.X, 50289.874);
+        B.SetupProperty(p => p.Y, 3528.978);
+
+        //Ëé∑ÂèñÊ®°ÊãüÂØπË±°ÁöÑÂÆû‰æã A.Object B.Object
+        var ad = A.Object.Azimuth(B.Object);
+        Assert.Equal(2.03230066539732, ad.a, 1e-10);
+        Assert.Equal(118.101331982326, ad.d, 1e-10);
+
+        ad = B.Object.Azimuth(A.Object);
+        Assert.Equal(2.03230066539732 + Math.PI, ad.a, 1e-10);
+        Assert.Equal(118.101331982326, ad.d, 1e-10);
+    }
 }

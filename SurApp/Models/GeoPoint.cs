@@ -1,8 +1,9 @@
 ﻿using SurApp.ViewModels;
+using ZXY;
 
 namespace SurApp.Models;
 
-public class GeoPoint : NotifyPropertyObject
+public class GeoPoint : ViewModelBase, IPoint
 {
 	private string name = "";
 	public string Name
@@ -87,7 +88,7 @@ public class GeoPoint : NotifyPropertyObject
 		}
 	}
 
-	public string GammaDMSString => ZXY.SurMath.RadianToString(Gamma);
+	public string GammaDMSString => ZXY.SurMath.RadianToDmsString(Gamma);
 
 	private double _m = 0.0;
 	public double m
