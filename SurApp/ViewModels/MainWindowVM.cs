@@ -42,7 +42,7 @@ public class MainWindowVM : ViewModelBase
 
     private double _dmsL0;
 
-    public double dmsL0
+    public double DmsL0
     {
         get => _dmsL0;
         set
@@ -85,7 +85,7 @@ public class MainWindowVM : ViewModelBase
     private void New()
     {
         CurrentEllipsoid = Ellipsoids["CGCS2000"];
-        dmsL0 = 0;
+        DmsL0 = 0;
         YKM = 0;
         NY = 0;
         PointList.Clear();
@@ -142,7 +142,7 @@ public class MainWindowVM : ViewModelBase
                     }
                         break;
                     case "L0":
-                        dmsL0 = double.TryParse(items[1], out var vL0) ? vL0 : 0.0;
+                        DmsL0 = double.TryParse(items[1], out var vL0) ? vL0 : 0.0;
                         break;
                     case "YKM":
                         YKM = double.TryParse(items[1], out var vYKM) ? vYKM : 0.0;
@@ -166,8 +166,8 @@ public class MainWindowVM : ViewModelBase
             if (items.Length >= 5)
             {
                 //默认为 D.MMSS
-                pnt.dmsB = double.TryParse(items[3], out var vB) ? vB : 0.0;
-                pnt.dmsL = double.TryParse(items[4], out var vL) ? vL : 0.0;
+                pnt.DmsB = double.TryParse(items[3], out var vB) ? vB : 0.0;
+                pnt.DmsL = double.TryParse(items[4], out var vL) ? vL : 0.0;
             }
 
             this.PointList.Add(pnt);
@@ -197,7 +197,7 @@ public class MainWindowVM : ViewModelBase
 
         sw.WriteLine();
 
-        sw.WriteLine($"L0: {dmsL0}");
+        sw.WriteLine($"L0: {DmsL0}");
         sw.WriteLine($"YKM: {YKM}");
         sw.WriteLine($"N: {NY}");
 
@@ -238,17 +238,17 @@ public class MainWindowVM : ViewModelBase
 
     private void BLtoXY()
     {
-        IProj proj = new GaussProj(CurrentEllipsoid);
-        double L0 = SurMath.DmsToRadian(this.dmsL0);
+        var proj = new GaussProj(CurrentEllipsoid);
+        double L0 = SurMath.DmsToRadian(DmsL0);
         foreach (var pnt in PointList)
         {
-            var B = SurMath.DmsToRadian(pnt.dmsB);
-            var L = SurMath.DmsToRadian(pnt.dmsL);
+            var B = SurMath.DmsToRadian(pnt.DmsB);
+            var L = SurMath.DmsToRadian(pnt.DmsL);
             var (X, Y, gamma, m) = proj.BLtoXY(B, L, L0, YKM, NY);
             pnt.X = X;
             pnt.Y = Y;
             pnt.Gamma = gamma;
-            pnt.m = m;
+            pnt.M = m;
         }
     }
 
@@ -257,14 +257,14 @@ public class MainWindowVM : ViewModelBase
     private void XYtoBL()
     {
         var proj = new GaussProj(CurrentEllipsoid);
-        var L0 = SurMath.DmsToRadian(this.dmsL0);
+        var L0 = SurMath.DmsToRadian(DmsL0);
         foreach (var pnt in PointList)
         {
             var (B, L, gamma, m) = proj.XYtoBL(pnt.X, pnt.Y, L0, YKM, NY);
-            pnt.dmsB = SurMath.RadianToDms(B);
-            pnt.dmsL = SurMath.RadianToDms(L);
+            pnt.DmsB = SurMath.RadianToDms(B);
+            pnt.DmsL = SurMath.RadianToDms(L);
             pnt.Gamma = gamma;
-            pnt.m = m;
+            pnt.M = m;
         }
     }
 
@@ -277,7 +277,7 @@ public class MainWindowVM : ViewModelBase
             pnt.X = 0;
             pnt.Y = 0;
             pnt.Gamma = 0;
-            pnt.m = 0;
+            pnt.M = 0;
         }
     }
 
@@ -287,10 +287,10 @@ public class MainWindowVM : ViewModelBase
     {
         foreach (var pnt in PointList)
         {
-            pnt.dmsB = 0;
-            pnt.dmsL = 0;
+            pnt.DmsB = 0;
+            pnt.DmsL = 0;
             pnt.Gamma = 0;
-            pnt.m = 0;
+            pnt.M = 0;
         }
     }
 

@@ -34,10 +34,7 @@ public class GeoPoint : ViewModelBase, IPoint
 	private double y = 0.0;
 	public double Y
 	{
-		get
-		{
-			return y;
-		}
+		get => y;
 		set
 		{
 			if(value >= 0)
@@ -49,12 +46,9 @@ public class GeoPoint : ViewModelBase, IPoint
 	}
 
 	private double _dmsB = 0.0;
-	public double dmsB
+	public double DmsB
 	{
-		get
-		{
-			return _dmsB;
-		}
+		get => _dmsB;
 		set
 		{
 			_dmsB = value;
@@ -63,12 +57,9 @@ public class GeoPoint : ViewModelBase, IPoint
 	}
 
 	private double _dmsL = 0.0;
-	public double dmsL
+	public double DmsL
 	{
-		get
-		{
-			return _dmsL;
-		}
+		get => _dmsL;
 		set
 		{
 			_dmsL = value;
@@ -88,10 +79,10 @@ public class GeoPoint : ViewModelBase, IPoint
 		}
 	}
 
-	public string GammaDMSString => ZXY.SurMath.RadianToDmsString(Gamma);
+	public string GammaDmsString => ZXY.SurMath.RadianToDmsString(Gamma);
 
 	private double _m = 0.0;
-	public double m
+	public double M
 	{
 		get => _m;
 		set
@@ -101,8 +92,5 @@ public class GeoPoint : ViewModelBase, IPoint
 		}
 	}
 
-	public override string ToString()
-	{
-		return $"{Name}, {X}, {Y}, {dmsB}, {dmsL}";
-	}
+	public override string ToString() => $"{Name}, {X}, {Y}, {DmsB}, {DmsL}";
 }
