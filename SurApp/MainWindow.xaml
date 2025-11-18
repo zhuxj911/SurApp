@@ -121,7 +121,7 @@
 							<ColumnDefinition Width="110*" />
 						</Grid.ColumnDefinitions>
 						<TextBlock Text="中央子午线经度(L0):" />
-						<TextBox Grid.Column="1" Text="{Binding dmsL0}" />
+						<TextBox Grid.Column="1" Text="{Binding DmsL0}" />
 						<TextBlock Grid.Column="2" Text="Y坐标加常数:" />
 						<TextBox Grid.Column="3" Text="{Binding YKM}" />
 						<TextBlock
@@ -150,11 +150,11 @@
 									Header="点名" />
 								<DataGridTextColumn
 									MinWidth="100"
-									Binding="{Binding dmsB, StringFormat={}{0:0.#########}}"
+									Binding="{Binding DmsB, StringFormat={}{0:0.#########}}"
 									Header="纬度(Latitude)" />
 								<DataGridTextColumn
 									MinWidth="100"
-									Binding="{Binding dmsL, StringFormat={}{0:0.#########}}"
+									Binding="{Binding DmsL, StringFormat={}{0:0.#########}}"
 									Header="经度(Longitude)" />
 								<DataGridTextColumn
 									MinWidth="100"
@@ -166,11 +166,11 @@
 									Header="Y(East)" />
 								<DataGridTextColumn
 									MinWidth="100"
-									Binding="{Binding GammaDMSString, Mode=OneWay}"
+									Binding="{Binding GammaDmsString, Mode=OneWay}"
 									Header="子午线收敛角(γ)" />
 								<DataGridTextColumn
 									MinWidth="100"
-									Binding="{Binding m}"
+									Binding="{Binding M}"
 									Header="长度比(m)" />
 							</DataGrid.Columns>
 						</DataGrid>

@@ -1,5 +1,7 @@
-﻿namespace SurApp.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public abstract class ViewModelBase : NotifyPropertyObject
+namespace SurApp.ViewModels;
+
+public abstract class ViewModelBase : ObservableObject
 {
 }

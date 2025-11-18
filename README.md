@@ -4,3 +4,7 @@
 
 
 托管于Github.com上的网络版本,教学程序
+
+branch org ： Custom INotifyPropertyChanged+ICommand
+branch mvvm:  CommunityToolkit.Mvvm
+branch avalonia: Avalonia + CommunityToolkit.Mvvm

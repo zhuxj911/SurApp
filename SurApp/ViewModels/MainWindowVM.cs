@@ -3,96 +3,54 @@ using SurApp.Models;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ZXY;
 
 namespace SurApp.ViewModels;
 
-public class MainWindowVM : ViewModelBase
+public partial class MainWindowVM : ViewModelBase
 {
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Title))]
     private string fileName = "untitle";
-
-    private string FileName
-    {
-        get => fileName;
-        set
-        {
-            fileName = value;
-            RaisePropertyChanged();
-            RaisePropertyChanged(nameof(Title));
-        }
-    }
-
+    
     public string Title => $"测量螺丝刀(Version©)-{FileName}";
 
     public List<Ellipsoid> EllipsoidList { get; } = EllipsoidFactory.EllipsoidList;
 
     private static Dictionary<string, Ellipsoid> Ellipsoids => EllipsoidFactory.Ellipsoids;
 
+    [ObservableProperty]
     private Ellipsoid currentEllipsoid = EllipsoidFactory.EllipsoidList[0];
 
-    public Ellipsoid CurrentEllipsoid
-    {
-        get => currentEllipsoid;
-        set
-        {
-            currentEllipsoid = value;
-            RaisePropertyChanged();
-        }
-    }
-
+    [ObservableProperty]
     private double _dmsL0;
-
-    public double dmsL0
-    {
-        get => _dmsL0;
-        set
-        {
-            _dmsL0 = value;
-            RaisePropertyChanged();
-        }
-    }
-
+    
+    [ObservableProperty]
     private double _YKM;
-
-    public double YKM
-    {
-        get => _YKM;
-        set
-        {
-            _YKM = value;
-            RaisePropertyChanged();
-        }
-    }
-
+    
+    [ObservableProperty]
     private int _NY;
-
-    public int NY
-    {
-        get => _NY;
-        set
-        {
-            _NY = value;
-            RaisePropertyChanged();
-        }
-    }
-
+    
     public ObservableCollection<GeoPoint> PointList { get; } = [];
 
     public bool IsValidated() => PointList.Count > 0;
 
     #region Commands
 
+    [RelayCommand]
     private void New()
     {
         CurrentEllipsoid = Ellipsoids["CGCS2000"];
-        dmsL0 = 0;
+        DmsL0 = 0;
         YKM = 0;
         NY = 0;
         PointList.Clear();
     }
 
-    public ICommand NewCommand => new Commands.RelayCommand((_) => New(), (_) => true);
-
+    
+    [RelayCommand]
     private void Open()
     {
         var dlg = new OpenFileDialog
@@ -142,7 +100,7 @@ public class MainWindowVM : ViewModelBase
                     }
                         break;
                     case "L0":
-                        dmsL0 = double.TryParse(items[1], out var vL0) ? vL0 : 0.0;
+                        DmsL0 = double.TryParse(items[1], out var vL0) ? vL0 : 0.0;
                         break;
                     case "YKM":
                         YKM = double.TryParse(items[1], out var vYKM) ? vYKM : 0.0;
@@ -166,16 +124,14 @@ public class MainWindowVM : ViewModelBase
             if (items.Length >= 5)
             {
                 //默认为 D.MMSS
-                pnt.dmsB = double.TryParse(items[3], out var vB) ? vB : 0.0;
-                pnt.dmsL = double.TryParse(items[4], out var vL) ? vL : 0.0;
+                pnt.DmsB = double.TryParse(items[3], out var vB) ? vB : 0.0;
+                pnt.DmsL = double.TryParse(items[4], out var vL) ? vL : 0.0;
             }
 
             this.PointList.Add(pnt);
         }
     }
-
-    public ICommand OpenCommand => new Commands.RelayCommand((_) => Open(), (_) => true);
-
+    
     private void WriteFile()
     {
         using var sw = new StreamWriter(FileName);
@@ -197,7 +153,7 @@ public class MainWindowVM : ViewModelBase
 
         sw.WriteLine();
 
-        sw.WriteLine($"L0: {dmsL0}");
+        sw.WriteLine($"L0: {DmsL0}");
         sw.WriteLine($"YKM: {YKM}");
         sw.WriteLine($"N: {NY}");
 
@@ -211,6 +167,7 @@ public class MainWindowVM : ViewModelBase
         sw.Close();
     }
 
+    [RelayCommand]
     private void Save()
     {
         if (FileName == "untitle")
@@ -219,8 +176,8 @@ public class MainWindowVM : ViewModelBase
             WriteFile();
     }
 
-    public ICommand SaveCommand => new Commands.RelayCommand((_) => Save(), (_) => true);
-
+   
+    [RelayCommand]
     private void SaveAs()
     {
         var dlg = new SaveFileDialog
@@ -234,42 +191,41 @@ public class MainWindowVM : ViewModelBase
         WriteFile();
     }
 
-    public ICommand SaveAsCommand => new Commands.RelayCommand((_) => SaveAs(), (_) => true);
-
+    
+    [RelayCommand]
     private void BLtoXY()
     {
         IProj proj = new GaussProj(CurrentEllipsoid);
-        double L0 = SurMath.DmsToRadian(this.dmsL0);
+        double L0 = SurMath.DmsToRadian(this.DmsL0);
         foreach (var pnt in PointList)
         {
-            var B = SurMath.DmsToRadian(pnt.dmsB);
-            var L = SurMath.DmsToRadian(pnt.dmsL);
+            var B = SurMath.DmsToRadian(pnt.DmsB);
+            var L = SurMath.DmsToRadian(pnt.DmsL);
             var (X, Y, gamma, m) = proj.BLtoXY(B, L, L0, YKM, NY);
             pnt.X = X;
             pnt.Y = Y;
             pnt.Gamma = gamma;
-            pnt.m = m;
+            pnt.M = m;
         }
     }
 
-    public ICommand BLtoXYCommand => new Commands.RelayCommand((_) => BLtoXY(), (_) => true);
-
+    [RelayCommand]
     private void XYtoBL()
     {
         var proj = new GaussProj(CurrentEllipsoid);
-        var L0 = SurMath.DmsToRadian(this.dmsL0);
+        var L0 = SurMath.DmsToRadian(this.DmsL0);
         foreach (var pnt in PointList)
         {
             var (B, L, gamma, m) = proj.XYtoBL(pnt.X, pnt.Y, L0, YKM, NY);
-            pnt.dmsB = SurMath.RadianToDms(B);
-            pnt.dmsL = SurMath.RadianToDms(L);
+            pnt.DmsB = SurMath.RadianToDms(B);
+            pnt.DmsL = SurMath.RadianToDms(L);
             pnt.Gamma = gamma;
-            pnt.m = m;
+            pnt.M = m;
         }
     }
 
-    public ICommand XYtoBLCommand => new Commands.RelayCommand((_) => XYtoBL());
-
+   
+    [RelayCommand]
     private void ClearXY()
     {
         foreach (var pnt in PointList)
@@ -277,32 +233,29 @@ public class MainWindowVM : ViewModelBase
             pnt.X = 0;
             pnt.Y = 0;
             pnt.Gamma = 0;
-            pnt.m = 0;
+            pnt.M = 0;
         }
     }
 
-    public ICommand ClearXYCommand => new Commands.RelayCommand((_) => ClearXY());
-
+   
+    [RelayCommand]
     private void ClearBL()
     {
         foreach (var pnt in PointList)
         {
-            pnt.dmsB = 0;
-            pnt.dmsL = 0;
+            pnt.DmsB = 0;
+            pnt.DmsL = 0;
             pnt.Gamma = 0;
-            pnt.m = 0;
+            pnt.M = 0;
         }
     }
 
-    public ICommand ClearBLCommand => new Commands.RelayCommand((_) => ClearBL());
-
+    
+    [RelayCommand]
     private void CalculateAzimuth()
     {
         var win = new AzimuthWindow();
         win.ShowDialog();
     }
-
-    public ICommand CalculateAzimuthCommand => new Commands.RelayCommand((_) => CalculateAzimuth());
-
     #endregion
 }

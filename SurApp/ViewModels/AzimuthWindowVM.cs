@@ -1,101 +1,57 @@
-﻿using System.Windows.Input;
-using SurApp.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SurApp.Models;
 using ZXY;
 
 namespace SurApp.ViewModels;
 
-internal class AzimuthWindowVM : ViewModelBase
+public partial class AzimuthWindowVM : ViewModelBase
 {
 
     public AzimuthWindowVM()
     {
         //设置为预编译状态下的数据
 #if DEBUG
-        startPoint = new() { Name = "D01", X = 3805820.521, Y = 333150.649 };
-        endPoint = new() { Name = "D02", X = 3805813.062, Y = 333067.961 };
+        StartPoint = new() { Name = "D01", X = 3805820.521, Y = 333150.649 };
+        EndPoint = new() { Name = "D02", X = 3805813.062, Y = 333067.961 };
 #else
-	    startPoint = new();
-		endPoint = new();
+	    StartPoint = new();
+		EndPoint = new();
 #endif
+        StartPoint.PropertyChanged += OnPointPropertyChanged; //是否可修改为发消息
+        EndPoint.PropertyChanged += OnPointPropertyChanged;
     }
 
+    private void OnPointPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        CalculateCommand.NotifyCanExecuteChanged();
+    }
+
+    [ObservableProperty]
     private GeoPoint startPoint;
-    public GeoPoint StartPoint
-    {
-        get => startPoint;
-        set
-        {
-            if(startPoint != value)
-            {
-                startPoint = value;
-                RaisePropertyChanged();
-            }
-            
-        }
-    }
+    
 
+    [ObservableProperty]
     private GeoPoint endPoint;
-    public GeoPoint EndPoint
-    {
-        get => endPoint;
-        set
-        {
-            if(endPoint != value)
-            {
-                endPoint = value;
-                RaisePropertyChanged();
-            }
-        }
-    }
+    
 
+    [ObservableProperty]
     private string azName = "起点->方向的坐标方位角:";
-    public string AzName
-    {
-        get => azName;
-        set
-        {
-            if(azName != value)
-            {
-                azName = value;
-                RaisePropertyChanged("AzName");
-            }
-        }
-    }
-
+   
+    [ObservableProperty]
     private string azValue = "";
-    public string AzValue
-    {
-        get => azValue;
-        set
-        {
-            if(azValue != value)
-            {
-                azValue = value;
-                RaisePropertyChanged();
-            }
-        }
-    }   
-
+       
+    [ObservableProperty]
     private double distance;
-    public double Distance
-    {
-        get => distance; 
-        set 
-        { 
-            if(distance != value)
-            {
-                distance = value; RaisePropertyChanged();
-            }
-        }
-    }
+    
 
+    [RelayCommand]
     private void Switch()
     {
         (StartPoint, EndPoint) = (EndPoint, StartPoint);
     }
-    public ICommand SwitchCommand => new Commands.RelayCommand( (_) => Switch() );
-
+    
+    [RelayCommand(CanExecute = nameof(CanCalculate))]
     private void Calculate()
     {
         var ad = StartPoint.Azimuth(EndPoint);
@@ -108,7 +64,6 @@ internal class AzimuthWindowVM : ViewModelBase
 
     // 控制计算按钮是否可用   
     private bool CanCalculate => Math.Abs(StartPoint.X - EndPoint.X) >= 0.1 || Math.Abs(StartPoint.Y - EndPoint.Y) >= 0.1;
-    public ICommand CalculateCommand => new RelayCommand( (_) => Calculate(), (_) => CanCalculate);
 }
 
 
