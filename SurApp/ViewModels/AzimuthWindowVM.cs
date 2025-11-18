@@ -77,37 +77,37 @@ internal class AzimuthWindowVM : ViewModelBase
         }
     }   
 
-    private double dist;
-    public double Dist
+    private double distance;
+    public double Distance
     {
-        get => dist; 
+        get => distance; 
         set 
         { 
-            if(dist != value)
+            if(distance != value)
             {
-                dist = value; RaisePropertyChanged();
+                distance = value; RaisePropertyChanged();
             }
         }
     }
 
-    public void Switch()
+    private void Switch()
     {
         (StartPoint, EndPoint) = (EndPoint, StartPoint);
     }
     public ICommand SwitchCommand => new Commands.RelayCommand( (_) => Switch() );
 
-    public void Calculate()
+    private void Calculate()
     {
         var ad = StartPoint.Azimuth(EndPoint);
 
         AzValue = SurMath.RadianToDmsString(ad.a);
-        Dist = ad.d;
+        Distance = ad.d;
 
         AzName = $"{StartPoint.Name}->{EndPoint.Name}的坐标方位角";
     }
 
     // 控制计算按钮是否可用   
-    public bool CanCalculate => Math.Abs(StartPoint.X - EndPoint.X) >= 0.1 || Math.Abs(StartPoint.Y - EndPoint.Y) >= 0.1;
+    private bool CanCalculate => Math.Abs(StartPoint.X - EndPoint.X) >= 0.1 || Math.Abs(StartPoint.Y - EndPoint.Y) >= 0.1;
     public ICommand CalculateCommand => new RelayCommand( (_) => Calculate(), (_) => CanCalculate);
 }
 

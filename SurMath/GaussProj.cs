@@ -1,13 +1,7 @@
 ﻿namespace ZXY;
 
-public class GaussProj : IProj
+public class GaussProj(Ellipsoid ellipsoid) : IProj
 {
-    private Ellipsoid ellipsoid;
-    public GaussProj(Ellipsoid ellipsoid)
-    {
-        this.ellipsoid = ellipsoid;
-    }
-
     private (double x, double y, double gamma, double m) BlToXy(double B, double l)
     {
         double sinB = Math.Sin(B);

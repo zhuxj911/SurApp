@@ -6,10 +6,7 @@
 public class Ellipsoid
 {
     public string Id { get; set; } //约定CS00代表自定义参考椭球
-    public bool IsCustomEllipsoid //用于控制界面，如果为自定义椭球，则可以改变 a f 文本输入框中的值
-    {
-        get => Id == "CS00";
-    }
+    public bool IsCustomEllipsoid => Id == "CS00"; //用于控制界面，如果为自定义椭球，则可以改变 a f 文本输入框中的值
 
     public string Name { get; set; }
 
@@ -35,7 +32,7 @@ public class Ellipsoid
         get => _f;
         set
         {
-            if (value > 298 && value < 299)
+            if (value is > 298 and < 299)
             {
                 _f = value;                  
                 InitEllipsoid();
@@ -44,13 +41,15 @@ public class Ellipsoid
     }
 
     private double b { get; set; }
-    private double e2 { get;  set; }
-    private double eT2 { get;  set; }
-    private double A0 { get;  set; }
-    private double A2 { get;  set; }
-    private double A4 { get;  set; }
-    private double A6 { get;  set; }
-    private double A8 { get;  set; }
+    private double e2;
+    private double eT2;
+    
+    //子午线弧长计算系数
+    private double A0;
+    private double A2;
+    private double A4;
+    private double A6;
+    private double A8;
         
        
     private void InitEllipsoid()
@@ -89,33 +88,18 @@ public class Ellipsoid
         this.f = inverse_flattening;
     }
 
-    public double funM(double sinB2)
-    {
-        return a * (1 - e2) / Math.Pow(1 - e2 * sinB2, 1.5);
-    }
-    public double funN(double sinB2)
-    {
-        return a / Math.Sqrt(1 - e2 * sinB2);
-    }
+    public double funM(double sinB2) => a * (1 - e2) / Math.Pow(1 - e2 * sinB2, 1.5); 
+    public double funN(double sinB2) => a / Math.Sqrt(1 - e2 * sinB2); 
 
-    public double funR(double sinB2)
-    {
-        return Math.Sqrt(funM(sinB2) * funN(sinB2));
-    }
+    public double funR(double sinB2) => Math.Sqrt(funM(sinB2) * funN(sinB2)); 
 
-    public double funG2(double cosB2)
-    {
-        return eT2 * cosB2;
-    }
+    public double funG2(double cosB2) => eT2 * cosB2; 
 
-    public double funX(double B)
-    {
-        return A0 * B
-               + A2 * Math.Sin(2 * B)
-               + A4 * Math.Sin(4 * B)
-               + A6 * Math.Sin(6 * B)
-               + A8 * Math.Sin(8 * B);
-    }
+    public double funX(double B) => A0 * B
+                                   + A2 * Math.Sin(2 * B)
+                                   + A4 * Math.Sin(4 * B)
+                                   + A6 * Math.Sin(6 * B)
+                                   + A8 * Math.Sin(8 * B); 
 
     public double funBf(double x)
     {
@@ -139,8 +123,5 @@ public class Ellipsoid
         return Bi;
     }        
 
-    public override string ToString()
-    {
-        return $"{Name}";
-    }
+    public override string ToString() => $"{Name}";
 }

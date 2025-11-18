@@ -94,6 +94,13 @@ public class UnitTestSurMath
 
         r = SurMath.DmsToDmsString(-1.4000);
         Assert.Equal("-1°40′00″", r);
+        
+        //B = 21 ◦ 58 ′ 47.0845 ′′ ,L = 113 ◦ 25 ′ 31.4880 ′′ ，
+        r = SurMath.DmsToDmsString(21.58470845);
+        Assert.Equal("21°58′47.0845″", r);
+        
+        r = SurMath.DmsToDmsString(113.25314880);
+        Assert.Equal("113°25′31.488″", r);
     }
 
 
