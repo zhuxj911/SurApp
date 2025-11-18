@@ -7,4 +7,4 @@
 
 branch org ： Custom INotifyPropertyChanged+ICommand
 branch mvvm:  CommunityToolkit.Mvvm
-branch avalonia: Avalonia + CommunityToolkit.Mvvm
+branch av: Avalonia + CommunityToolkit.Mvvm
