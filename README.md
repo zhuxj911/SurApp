@@ -7,4 +7,7 @@
 
 branch org ： Custom INotifyPropertyChanged+ICommand
 branch mvvm:  CommunityToolkit.Mvvm
-branch av: Avalonia + CommunityToolkit.Mvvm
+
+CommunityToolkit.Mvvm：
+
+https://learn.microsoft.com/zh-cn/dotnet/communitytoolkit/mvvm/messenger

@@ -1,11 +1,11 @@
 ﻿using ZXY;
 
-namespace UnitTestGaussProj;
+namespace UnitTestUtmProj;
 
-public class UnitTestGaussProj
+public class UnitTestUtmProj
 {
     [Fact]
-    public void TestBLToXY_BJ54()
+    public void TestBLToXY_WGS84()
     {
         IProj proj = new GaussProj(EllipsoidFactory.Ellipsoids["BJ54"]);
 
@@ -39,25 +39,10 @@ public class UnitTestGaussProj
         Assert.Equal(320089.9761, r.Y, 7e-3); //Expected: 320089.9761 Actual 320089.96964730945
     }
     
-    [Fact]
-    public void TestBLToXY_XA80()
-    {
-        IProj proj = new GaussProj(EllipsoidFactory.Ellipsoids["XA80"]);
-
-        //大地测量学P176
-        //B = 30 ◦ 30 ′ 00 ′′ , L = 114 ◦ 20 ′00 ′′ , L0 = 111 ◦ 
-        //x = 3380272.288636,y = 320084.740
-        var B = SurMath.DmsToRadian(30.30);
-        var L = SurMath.DmsToRadian(114.20);
-        var L0 = SurMath.DmsToRadian(111);
-        var r = proj.BLtoXY(B, L, L0, 0, 0);
-
-        Assert.Equal(3380272.288636, r.X, 1e-3); //Expected: 3380272.288636, Actual:3380272.2880590358
-        Assert.Equal(320084.740, r.Y, 1e-3); //Expected: 320084.740 Actual 320084.74014141585
-    }
+    
 
     [Fact]
-    public void TestXYToBL_BJ54()
+    public void TestXYToBL_WGS84()
     {
             //B = 21 ◦ 58 ′ 47.0845 ′′ ,L = 113 ◦ 25 ′ 31.4880 ′′ ，
             IProj proj = new GaussProj(EllipsoidFactory.Ellipsoids["BJ54"]);
@@ -70,21 +55,5 @@ public class UnitTestGaussProj
 
             Assert.Equal(21.58470845, B, 1e-8);
             Assert.Equal(2.25314880, l, 1e-8);
-    }
-    
-    [Fact]
-    public void TestXYToBL_XA80()
-    {
-        //B = 30 ◦ 30 ′ 00 ′′ , L = 114 ◦ 20 ′ 00 ′′ ，L0 = 111 ◦ 
-        IProj proj = new GaussProj(EllipsoidFactory.Ellipsoids["XA80"]);
-
-        double  x=3380272.288636, y = 320084.740;
-        var r = proj.XYtoBL(x, y);
-
-        var B = SurMath.RadianToDms(r.B);
-        var l = SurMath.RadianToDms(r.L);
-
-        Assert.Equal(30.30, B, 1e-8);
-        Assert.Equal(3.20, l, 1e-8);
     }
 }

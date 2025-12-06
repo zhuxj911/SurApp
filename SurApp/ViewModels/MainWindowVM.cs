@@ -147,7 +147,7 @@ public partial class MainWindowVM : ViewModelBase
         sw.WriteLine("#CS: WGS84");
         sw.WriteLine("#CS: CGCS2000");
         sw.WriteLine("#CS: CS00, 6378137, 298.257222101");
-        sw.WriteLine(CurrentEllipsoid.Id == "CS00"
+        sw.WriteLine(CurrentEllipsoid.Id == EllipsoidType.CS00
             ? $"CS: {CurrentEllipsoid.Id}, {CurrentEllipsoid.a}, {CurrentEllipsoid.f}"
             : $"CS: {CurrentEllipsoid.Id}");
 

@@ -1,12 +1,26 @@
 ﻿namespace ZXY;
 
 /// <summary>
+/// 参考椭球类型
+/// </summary>
+public enum EllipsoidType
+{
+    CS00 =0,
+    BJ54=1,
+    XA80=2,
+    WGS84=3,
+    CGCS2000=4
+}
+
+/// <summary>
 /// 参考椭球
 /// </summary>
 public class Ellipsoid
 {
-    public string Id { get; set; } //约定CS00代表自定义参考椭球
-    public bool IsCustomEllipsoid => Id == "CS00"; //用于控制界面，如果为自定义椭球，则可以改变 a f 文本输入框中的值
+    public EllipsoidType Id { get; set; } //约定CS00代表自定义参考椭球
+    
+    //用于控制界面，如果为自定义椭球，则可以改变 a f 文本输入框中的值
+    public bool IsCustomEllipsoid => Id == EllipsoidType.CS00; 
 
     public string Name { get; set; }
 
@@ -32,7 +46,7 @@ public class Ellipsoid
         get => _f;
         set
         {
-            if (value is > 298 and < 299)
+            if (value is > 298 and < 299) // if (value is > 298 && value < 299) 
             {
                 _f = value;                  
                 InitEllipsoid();
@@ -40,18 +54,16 @@ public class Ellipsoid
         }
     }
 
-    private double b { get; set; }
+    private double b;
     private double e2;
     private double eT2;
     
     //子午线弧长计算系数
-    private double A0;
-    private double A2;
-    private double A4;
-    private double A6;
-    private double A8;
+    private double A0, A2, A4, A6, A8;
         
-       
+    /// <summary>
+    /// 根据 a, f 的值初始化参考椭球的几何属性
+    /// </summary>
     private void InitEllipsoid()
     {
         //防御性处理，防止界面上给a与f输入值0导致程序崩溃
@@ -61,10 +73,10 @@ public class Ellipsoid
         e2 = 1 - b / a * b / a;
         eT2 = a / b * a / b - 1;
 
-        double m0 = a * (1 - e2);
-        double e4 = e2 * e2;
-        double e6 = e4 * e2;
-        double e8 = e6 * e2;
+        var m0 = a * (1 - e2);
+        var e4 = e2 * e2;
+        var e6 = e4 * e2;
+        var e8 = e6 * e2;
 
         A0 = (1 + 0.75 * e2 + 45.0 / 64.0 * e4
               + 175.0 / 256.0 * e6 + 11025.0 / 16384.0 * e8) * m0;
@@ -83,7 +95,7 @@ public class Ellipsoid
     /// <param name="inverse_flattening">扁率的分母</param>
     public Ellipsoid(double semimajor_axis, double inverse_flattening)
     {
-        //此处使用属性a, f接收参数，因此不需要调用函数 InitSpheroid
+        //此处使用属性a, f接收参数，因此不需要调用函数 InitEllipsoid
         this.a = semimajor_axis;
         this.f = inverse_flattening;
     }
