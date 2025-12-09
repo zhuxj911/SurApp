@@ -4,7 +4,7 @@ using ZXY;
 
 namespace SurApp.Models;
 
-public partial class GeoPoint : ViewModelBase, IPoint
+public partial class GPoint : ViewModelBase, IPoint
 {
 	[ObservableProperty]
 	private string name = "";

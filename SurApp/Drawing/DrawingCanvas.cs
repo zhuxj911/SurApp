@@ -1,25 +1,25 @@
-﻿using SurApp.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using SurApp.Models;
 
 namespace SurApp.Drawing;
 
 public class DrawingCanvas : System.Windows.Controls.Canvas
 {
 	//定义依赖属性，绑定绘图数据源
-	public ObservableCollection<GeoPoint> DrawPoints
+	public ObservableCollection<GPoint> DrawPoints
 	{
-		get => (ObservableCollection<GeoPoint>)GetValue(DrawPointsProperty);
+		get => (ObservableCollection<GPoint>)GetValue(DrawPointsProperty);
 		set => SetValue(DrawPointsProperty, value);
 	}
 
 	public static readonly DependencyProperty DrawPointsProperty =
-		DependencyProperty.Register("DrawPoints", typeof(ObservableCollection<GeoPoint>), typeof(DrawingCanvas),
-			new PropertyMetadata(DrawPointsValueChanged));
+		DependencyProperty.Register("DrawPoints", 
+		typeof(ObservableCollection<GPoint>), 
+		typeof(DrawingCanvas),
+		new PropertyMetadata(DrawPointsValueChanged));
 
 	public static void DrawPointsValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
@@ -31,11 +31,8 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 	{
 		this.InvalidateVisual();
 	}
-	//定义依赖属性，绑定绘图数据源
-
-
+	
 	private VisualCollection visuals;
-
 
 	public DrawingCanvas()
 	{
@@ -46,10 +43,7 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 	protected override int VisualChildrenCount => visuals.Count;
 
 	//获取Visual
-	protected override Visual GetVisualChild(int index)
-	{
-		return visuals[index];
-	}
+	protected override Visual GetVisualChild(int index) => visuals[index]; 
 
 	//添加Visual
 	public void AddVisual(Visual visualObject)
@@ -75,15 +69,14 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		this.visuals.Clear();
 	}
 
-
 	//使用DrawVisual画Polyline
-	public void DrawLine(DrawingContext dc, double x0, double y0, double x1, double y1, Brush color, double thinkness)
+	public void DrawLine(DrawingContext dc, double x0, double y0, double x1, double y1, 
+		Brush color, double thinkness)
 	{
 		Pen pen = new Pen(color, thinkness);
 		pen.Freeze();  //冻结画笔，这样能加快绘图速度
 		dc.DrawLine(pen, new Point(x0, y0), new Point(x1, y1));
 	}
-
 
 	public void DrawText(DrawingContext dc, string text, double x, double y)
 	{
@@ -98,7 +91,6 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 
 		dc.DrawText(ft, new Point(x, y));
 	}
-
 
 	//使用DrawVisual画Circle，用作控制点
 	public void DrawCtrPnt(DrawingContext dc, double x, double y, Brush color, double thinkness)
@@ -120,8 +112,8 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 	}
 
 	//以下定义为绘图使用
-	private double minX;  //高斯坐标X的最小值xn
-	private double minY;  //高斯坐标Y的最小值yn
+	private double minX; //高斯坐标X的最小值xn
+	private double minY; //高斯坐标Y的最小值yn
 	private double maxX; //高斯坐标X的最大值xm
 	private double maxY; //高斯坐标Y的最大值ym
 
@@ -132,8 +124,7 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 
 	private void OnDraw(DrawingContext dc)
 	{
-		if(DrawPoints.Count == 0)
-			return;
+		if(DrawPoints.Count == 0) return;
 
 		GetGaussXySize();
 
@@ -143,7 +134,6 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		double kx = maxVX / (maxY - minY);
 		double ky = maxVY / (maxX - minX);
 		k = kx <= ky ? kx : ky;
-
 
 		foreach(var pt in DrawPoints)
 		{
@@ -173,7 +163,8 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		maxX = DrawPoints[0].X;
 		maxY = DrawPoints[0].Y;
 
-		for(int i = 1; i < DrawPoints.Count; i++) //如果只有一个点，由循环条件知，不会执行循环体
+		//如果只有一个点，由循环条件知，不会执行循环体
+		for(int i = 1; i < DrawPoints.Count; i++) 
 		{
 			if(DrawPoints[i].X <= 0 || DrawPoints[i].Y <= 0)
 				continue;
@@ -201,20 +192,5 @@ public class DrawingCanvas : System.Windows.Controls.Canvas
 		base.OnRender(dc);
 		if(DrawPoints != null)
 			this.OnDraw(dc);
-	}
-
-	public void OutToBmp(string bmpFileName)
-	{
-		//RenderTargetBitmap rtb = new RenderTargetBitmap((int)this.ActualWidth, (int)this.ActualHeight, this.ActualWidth, this.ActualHeight, PixelFormats.Default);
-		////foreach (var it in this.visuals)
-		////{
-		////	rtb.Render(it);
-		////}
-		//rtb.Render(this.visuals[0]);
-
-		//FileStream stream = new FileStream(bmpFileName, FileMode.Create);
-		//BitmapEncoder encoder = new BmpBitmapEncoder();
-		//encoder.Frames.Add(BitmapFrame.Create(rtb));
-		//encoder.Save(stream);
 	}
 }

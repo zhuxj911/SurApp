@@ -28,11 +28,11 @@ public partial class AzimuthWindowVM : ViewModelBase
     }
 
     [ObservableProperty]
-    private GeoPoint startPoint;
+    private GPoint startPoint;
     
 
     [ObservableProperty]
-    private GeoPoint endPoint;
+    private GPoint endPoint;
     
 
     [ObservableProperty]

@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using SurApp.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 
 namespace SurApp
 {
@@ -12,18 +10,6 @@ namespace SurApp
 		public MainWindow()
 		{
 			InitializeComponent();
-
 		}
-
-		//private void MenuItem_OutToBmp_Click(object sender, RoutedEventArgs e)
-		//{
-		//	SaveFileDialog dlg = new SaveFileDialog();
-		//	dlg.DefaultExt = ".jpg'";
-		//	dlg.Filter = "jpg图形|*.jpg|bmp图像|*.bmp|png图像|*.png|All File(*.*)|*.*";
-		//	if(dlg.ShowDialog() != true)
-		//		return;
-
-		//	this.figureCanvas.OutToBmp(dlg.FileName);
-		//}
 	}
 }
