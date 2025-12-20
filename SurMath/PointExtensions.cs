@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ZXY;
+﻿namespace ZXY;
 
 public interface IPoint
 {

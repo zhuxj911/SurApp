@@ -33,7 +33,9 @@
             <MenuItem Header="文件(F)">
                 <MenuItem Command="{Binding NewCommand}" Header="新建..." />
                 <MenuItem Command="{Binding OpenCommand}" Header="打开..." />
+                <MenuItem Command="{Binding OpenJsonCommand}" Header="打开Json..." />
                 <MenuItem Command="{Binding SaveCommand}" Header="保存" />
+                <MenuItem Command="{Binding SaveJsonCommand}" Header="保存Json" />
                 <MenuItem Command="{Binding SaveAsCommand}" Header="另存为..." />
                 <Separator />
                 <MenuItem Header="退出" />

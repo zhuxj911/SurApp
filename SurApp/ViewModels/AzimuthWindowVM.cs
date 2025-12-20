@@ -12,8 +12,8 @@ public partial class AzimuthWindowVM : ViewModelBase
     {
         //设置为预编译状态下的数据
 #if DEBUG
-        StartPoint = new() { Name = "D01", X = 3805820.521, Y = 333150.649 };
-        EndPoint = new() { Name = "D02", X = 3805813.062, Y = 333067.961 };
+        StartPoint = new(new GPoint { Name = "D01", X = 3805820.521, Y = 333150.649 });
+        EndPoint = new(new GPoint { Name = "D02", X = 3805813.062, Y = 333067.961 });
 #else
 	    StartPoint = new();
 		EndPoint = new();
@@ -28,11 +28,11 @@ public partial class AzimuthWindowVM : ViewModelBase
     }
 
     [ObservableProperty]
-    private GPoint startPoint;
+    private GPointViewModel startPoint;
     
 
     [ObservableProperty]
-    private GPoint endPoint;
+    private GPointViewModel endPoint;
     
 
     [ObservableProperty]
@@ -54,7 +54,7 @@ public partial class AzimuthWindowVM : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanCalculate))]
     private void Calculate()
     {
-        var ad = StartPoint.Azimuth(EndPoint);
+        var ad = StartPoint.GetGPoint().Azimuth( EndPoint.GetGPoint() );
 
         AzValue = SurMath.RadianToDmsString(ad.a);
         Distance = ad.d;

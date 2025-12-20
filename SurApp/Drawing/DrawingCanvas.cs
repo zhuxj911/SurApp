@@ -2,22 +2,22 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using SurApp.Models;
+using SurApp.ViewModels;
 
 namespace SurApp.Drawing;
 
 public class DrawingCanvas : System.Windows.Controls.Canvas
 {
 	//定义依赖属性，绑定绘图数据源
-	public ObservableCollection<GPoint> DrawPoints
+	public ObservableCollection<GPointViewModel> DrawPoints
 	{
-		get => (ObservableCollection<GPoint>)GetValue(DrawPointsProperty);
+		get => (ObservableCollection<GPointViewModel>)GetValue(DrawPointsProperty);
 		set => SetValue(DrawPointsProperty, value);
 	}
 
 	public static readonly DependencyProperty DrawPointsProperty =
 		DependencyProperty.Register("DrawPoints", 
-		typeof(ObservableCollection<GPoint>), 
+		typeof(ObservableCollection<GPointViewModel>), 
 		typeof(DrawingCanvas),
 		new PropertyMetadata(DrawPointsValueChanged));
 
